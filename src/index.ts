@@ -1,18 +1,8 @@
 // Projekt rezerwacji biletow
-// import {rl,ask} from '../readlineconfig'
-// import {Users} from './mockData'
-import * as readline from 'readline';
-export const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-})
-export function ask(question: string): Promise<string> {
-    return new Promise((resolve) => {
-        rl.question(question, (answer: string) => resolve(answer));
-    });
-}
-import {User} from "./types";
-export const Users = new Map<string, User>();
+import {rl,ask} from '../readlineconfig'
+import {Users} from './mockData'
+
+
 
 
 async function main():Promise<void> {
