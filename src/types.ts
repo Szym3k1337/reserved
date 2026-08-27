@@ -3,7 +3,7 @@ export interface User {
     name: string;
     password: string;
     email: string;
-    birthdate: string;
+    birthdate: Date;
     reservations : Reservation[];
 }
 // Rezerwacja
