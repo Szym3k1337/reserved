@@ -4,12 +4,12 @@ export interface User {
     password: string;
     email: string;
     birthdate: Date;
-    reservations : Reservation[];
+    reservations : Map<string,Reservation>
 }
 // Rezerwacja
 export interface Reservation {
+    id: string;
     event: Event;
-    reservedSpots: number;
     status: 'pending' | 'cancelled' | 'confirmed' | 'completed';
     price: number;
     spots: Spot[];
