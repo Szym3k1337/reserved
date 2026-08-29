@@ -16,21 +16,25 @@ export interface Reservation {
 }
 // Wydarzenie
 export interface Event {
+    id: string;
     kind: EventKind;
     date: string;
     availableSpots: number;
     ageRestriction: boolean;
     onePersonLimit: boolean;
+    spots: Spot[];
 }
 // Baza do miejsc
 interface BaseSpot {
     id: string;
+    eventId: string;
     currency : 'USD' | 'EUR' | 'PLN';
     isAccessibleForDisabled?: boolean;
     price: number;
+    isAvailable: boolean;
 }
 // Typy wydarzeń
-type EventKind =
+export type EventKind =
     "Samoloty"|
     "Pociągi"|
     "Autobusy"|
