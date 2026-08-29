@@ -318,9 +318,9 @@ export const mockEventsList: Event[] = [
 ];
 
 export const mockEvents = new Map<string, Event>(mockEventsList.map((event: Event) => [event.id, event]));
-// =====================================================================================
-// Pomocnicza, spłaszczona lista wszystkich Spotów (np. do szybkiego wyszukiwania po id)
-// =====================================================================================
+
+// Pomocnicza, spłaszczona lista wszystkich Spotów
+
 export const mockSpotsList: Spot[] = mockEventsList.flatMap((event) => event.spots);
 export const mockSpots = new Map<string, Spot>(mockSpotsList.map(spot => [spot.id, spot]))
 

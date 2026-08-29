@@ -1,8 +1,16 @@
 // Projekt rezerwacji biletów
 import {rl} from '../readlineconfig'
 import {Users} from './mockData'
-import {AuthValidator, addUsers, filterEvents, ask} from "./functions";
-import {type User} from "./types";
+import {
+    AuthValidator,
+    addUsers,
+    filterEvents,
+    ask,
+    createReservation,
+    showReservations,
+    deleteReservation
+} from "./functions";
+import {Reservation, type User} from "./types";
 
 async function main():Promise<void> {
     addUsers()
@@ -25,7 +33,8 @@ async function main():Promise<void> {
                                 throw new Error(`Podane hasło jest błędne`)
                             }
                             loggedUser = searchedUser;
-                            console.log(`Pomyślnie zalogowano jako ${loggedUser}`);
+                            console.log(`Pomyślnie zalogowano jako :`);
+                            console.log(loggedUser);
                         }
                         break;
                     case '2' :
@@ -62,7 +71,7 @@ async function main():Promise<void> {
                         if(birthDate > maxDate) {
                             throw new Error(`Twoja data urodzenia musi być większa niż 2011-01-01`)
                         }
-                        const newUser = {email: email, name: name, password: password, birthdate: birthDate, reservations: []}
+                        const newUser = {email: email, name: name, password: password, birthdate: birthDate, reservations: new Map<string,Reservation>()}
                         Users.set(email, newUser);
                         console.log(`Witamy ${name} !\nPomyślnie stworzono kąto !`);
                         loggedUser = newUser;
@@ -73,81 +82,35 @@ async function main():Promise<void> {
 
             }
             else {
-                console.log(`Wybierz akcje : `)
+                console.log(`Wybierz akcje (numer) : `)
                 const choice = await ask(
-            `1. Sprawdz kalendarz\n2. Wyszukaj wydarzenie\n3. Twoje rezerwacje\n4. Stwórz rezerwacje\n5. Usuń rezerwacje\n6. Wyloguj się `
+            `1. Wyszukaj wydarzenie\n2. Moje rezerwacje\n3. Stwórz rezerwacje\n4. Usuń rezerwacje\n5. Wyloguj się \n6.Wyjście `
                 )
 
                 switch(choice) {
                     case '1' :
-                        running = false;
+                        await filterEvents();
                         break;
                     case '2' :
-                        running = false;
+                        showReservations(loggedUser);
                         break;
-
                     case '3' :
-                        running = false;
+
+                        await createReservation(loggedUser);
                         break;
                     case '4' :
-                        console.log(`Wybierz typ wydarzenia :`)
-                        const typeIn = await ask(`1. Samoloty\n2. Pociągi\n3. Autobusy\n4. Promy i rejsy\n5. Kina\n6. Teatry\n7. Koncerty\n8. Festiwale\n9. Wydarzenia sportowe\n10. Muzea\n11. Zabytki\n12. Parki rozrywki\n13. Atrakcje turystyczne`);
-
-                        switch (typeIn.trim()) {
-                            case '1' :
-                                await filterEvents('Samoloty',loggedUser);
-
-                                break;
-                            case '2' :
-                                await filterEvents('Pociągi',loggedUser);
-                                break;
-                            case '3' :
-                                await filterEvents('Autobusy',loggedUser);
-                                break;
-                            case '4' :
-                                await filterEvents('Promy i rejsy',loggedUser);
-                                break;
-                            case '5' :
-                                await filterEvents('Kina',loggedUser);
-                                break;
-                            case '6' :
-                                await filterEvents('Teatry',loggedUser);
-                                break;
-                            case '7' :
-                                await filterEvents('Koncerty',loggedUser);
-                                break;
-                            case '8' :
-                                await filterEvents('Festiwale',loggedUser);
-                                break;
-                            case '9' :
-                                await filterEvents('Wydarzenia sportowe',loggedUser);
-                                break;
-                            case '10' :
-                                await filterEvents('Muzea',loggedUser);
-                                break;
-                            case '11' :
-                                await filterEvents('Zabytki',loggedUser);
-                                break;
-                            case '12' :
-                                await filterEvents('Parki rozrywki',loggedUser);
-                                break;
-                            case '13' :
-                                await filterEvents('Atrakcje turystyczne',loggedUser);
-                                break;
-
-
-
-                        }
+                        await deleteReservation(loggedUser);
                         break;
+
                     case '5' :
-                        running = false;
-                        break;
-                    case '6' :
-                        console.log(`pomyślnie wylogowano !`)
+                        console.log(`Pomyślnie wylogowano .`)
                         loggedUser = null;
                         break;
-                    default:
+                    case '6' :
                         running = false;
+                        break;
+                    default:
+                        console.log(`Nie ma takiej opcji.`)
                         break;
                 }
 
