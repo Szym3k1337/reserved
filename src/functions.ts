@@ -48,16 +48,16 @@ export const ask = function(question: string): Promise<string> {
 
 export const addUsers = function():void {
     for (let i = 0; i < 10; i++) {
-        Users.set(emails[i],{name : usernames[i], password : passwords[i], birthdate : dates[i], email : emails[i], reservations : new Map<string,Reservation>()});
+        Users.set(usernames[i],{name : usernames[i], password : passwords[i], birthdate : dates[i], email : emails[i], reservations : new Map<string,Reservation>()});
     }
 }
 
-export const availableSpots = function(eventId: string): Spot[] {
+export const availableSpots = function(eventId: string): Spot[] | void {
     const available = mockSpotsList.filter((s) => s.eventId === eventId && s.isAvailable);
     if(available !== undefined) {
         return available
     }
-    else return []
+    else return
 
 }
 
@@ -71,73 +71,90 @@ export const availableEvents = function(kind:EventKind):Event[]{
     else return [];
 }
 
-export const filterEvents = async function():Promise<void>{
+export const filterEvents = async function():Promise<Event[]>{
     console.log(`Wybierz typ wydarzenia (numer) :`)
     const typeIn = await ask(`1. Samoloty\n2. Pociągi\n3. Autobusy\n4. Promy i rejsy\n5. Kina\n6. Teatry\n7. Koncerty\n8. Festiwale\n9. Wydarzenia sportowe\n10. Muzea\n11. Zabytki\n12. Parki rozrywki\n13. Atrakcje turystyczne`);
 
     switch(typeIn.trim()) {
-        case '1' :
-            availableEvents('Samoloty');
-        break;
-        case '2' :
-            availableEvents('Pociągi');
-            break;
-        case '3' :
-            availableEvents('Autobusy');
-            break;
-        case '4' :
-            availableEvents('Promy i rejsy');
-            break;
-        case '5' :
-            availableEvents('Kina');
-            break;
-        case '6' :
-            availableEvents('Teatry');
-            break;
-        case '7' :
-            availableEvents('Koncerty');
-            break;
-        case '8' :
-            availableEvents('Festiwale');
-            break;
-        case '9' :
-            availableEvents('Wydarzenia sportowe');
-            break;
-        case '10' :
-            availableEvents('Muzea');
-            break;
-        case '11' :
-            availableEvents('Zabytki');
-            break;
-        case '12' :
-            availableEvents('Parki rozrywki');
-            break;
-        case '13' :
-            availableEvents('Atrakcje turystyczne');
-            break;
-        default :
+        case '1' : {
+            const events = availableEvents('Samoloty');
+            return events
+        }
+
+        case '2' :  {
+            const events = availableEvents('Pociągi');
+            return events
+        }
+
+        case '3' : {
+            const events = availableEvents('Autobusy');
+            return events
+        }
+        case '4' : {
+            const events = availableEvents('Promy i rejsy');
+            return events
+        }
+        case '5' : {
+            const events = availableEvents('Kina');
+            return events
+        }
+        case '6' : {
+            const events = availableEvents('Teatry');
+            return events
+        }
+        case '7' : {
+            const events = availableEvents('Koncerty');
+            return events
+        }
+        case '8' : {
+            const events = availableEvents('Festiwale');
+            return events
+        }
+        case '9' : {
+            const events = availableEvents('Wydarzenia sportowe');
+            return events
+        }
+        case '10' : {
+            const events = availableEvents('Muzea');
+            return events
+        }
+        case '11' : {
+            const events = availableEvents('Zabytki');
+            return events
+        }
+        case '12' : {
+            const events = availableEvents('Parki rozrywki');
+            return events
+        }
+        case '13' : {
+            const events = availableEvents('Atrakcje turystyczne');
+            return events
+        }
+        default : {
             throw new Error(`Proszę wybrać poprawny typ wydarzenia`)
+        }
     }
+
 }
 
 export const createReservation = async function(user:User): Promise<Reservation> {
-    await filterEvents();
+    const filteredEvents = await filterEvents();
     const eventId = await ask(`Proszę podać id wybranego wydarzenia : `);
     const event = mockEvents.get(eventId.trim());
-    if(event !== undefined){
+    if(event !== undefined && filteredEvents.includes(event)){
         const spot = await reserveSpot(event);
         const newReservation: Reservation = {
-            id: `${event.id}-${user.name}`,
+            id: `${spot.id}-${user.name}`,
             event : event,
             price : spot.price,
             status : "pending",
             spots : [spot],
         }
-        user.reservations.set(`${event.id}-${user.name}`,newReservation);
+        user.reservations.set(`${spot.id}-${user.name}`,newReservation);
         console.log(`Pomyślnie utworzono rezerwacje.\nAby uzyskać więcej informacji proszę wybrać opcję "Moje rezerwacje" w menu`);
         return newReservation;
     }
-    else throw new Error(`Nie ma wydarzenia o podanym id. Proszę sprawdzić wprowadzone dane`)
+    else throw new Error(`Nie ma wydarzenia o podanym id lub wydarzenie jest innego typu. Proszę sprawdzić wprowadzone dane`)
 
 }
 
@@ -148,7 +165,7 @@ export const reserveSpot = async function(event: Event):Promise<Spot> {
         const choiceIn = await ask(`Podaj id wybranego miejsca :`)
 
         const reserved = mockSpots.get(choiceIn.trim());
-        if(reserved !== undefined) {
+        if(reserved !== undefined && available.includes(reserved)) {
             reserved.isAvailable = false;
             console.log(`Twoje miejsce zostało pomyślnie zarezerwowane !\nInformacje o twoim miejscu :\n`);
             console.log(reserved);
@@ -157,7 +174,7 @@ export const reserveSpot = async function(event: Event):Promise<Spot> {
             mockEvents.set(choiceIn.trim(),{...event, spots: [...availableAfterReservation , reserved]});
             return reserved;
         }
-        else throw new Error(`Nie ma miejsca o podanym id`);
+        else throw new Error(`Nie ma miejsca o podanym id lub miejsce zostało już zarezerwowane !`);
     }
     else throw new Error(`Niestety wydarzenie którego szukasz nie ma już dostępnych miejsc `);
 

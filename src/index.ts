@@ -8,7 +8,7 @@ import {
     ask,
     createReservation,
     showReservations,
-    deleteReservation
+    deleteReservation,
 } from "./functions";
 import {Reservation, type User} from "./types";
 
@@ -25,7 +25,7 @@ async function main():Promise<void> {
                 const startChoice = await ask(`Wybierz Opcje :\n1.Zaloguj się\n2.Zarejestruj się : `);
                 switch(startChoice.trim()) {
                     case '1' :
-                        const loginIn = await ask(`Podaj swoj email : `);
+                        const loginIn = await ask(`Podaj swoją nazwe : `);
                         const searchedUser = Users.get(loginIn.trim());
                         if(searchedUser) {
                             const passwordIn = await ask(`Podaj hasło : `);
@@ -40,11 +40,15 @@ async function main():Promise<void> {
                     case '2' :
                         const nameIn = await ask(`Podaj swoją nazwe (4-20 znaków bez znaków specjalnych) : `);
                         const name = nameIn.trim();
+                        const names: string[] = [];
+                        Users.forEach(user => names.push(user.name))
+                        if(names.includes(name)){
+                            throw new Error("Twoja nazwa musi być unikalna");
+                        }
                         const userNameCheck = AuthValidator.validateUsername(name);
                         if(!userNameCheck.success) {
                             throw new Error(userNameCheck.message);
                         }
-
                         console.log(userNameCheck.message);
 
                         const passwordIn = await ask(`Podaj swoje hasło\n(minimum 8 znaków, 1 mała litera, 1 duża litera oraz znak specjalny) : `)

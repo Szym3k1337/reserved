@@ -324,6 +324,8 @@ export const mockEvents = new Map<string, Event>(mockEventsList.map((event: Even
 export const mockSpotsList: Spot[] = mockEventsList.flatMap((event) => event.spots);
 export const mockSpots = new Map<string, Spot>(mockSpotsList.map(spot => [spot.id, spot]))
 
+export const names: string[] = [];
+Users.forEach(user => names.push(user.name))
 
 
 
