@@ -12,7 +12,7 @@ export interface Reservation {
     event: Event;
     status: 'pending' | 'cancelled' | 'confirmed' | 'completed';
     price: number;
-    spots: Spot[];
+    spots: Spot;
 }
 // Wydarzenie
 export interface Event {

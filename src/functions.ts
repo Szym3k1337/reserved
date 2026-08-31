@@ -77,78 +77,78 @@ export const filterEvents = async function():Promise<Event[]>{
 
     switch(typeIn.trim()) {
         case '1' : {
-            const events = availableEvents('Samoloty');
-            return events
+
+            return availableEvents('Samoloty');
         }
 
         case '2' :  {
-            const events = availableEvents('Pociągi');
-            return events
+            return availableEvents('Pociągi');
         }
 
         case '3' : {
-            const events = availableEvents('Autobusy');
-            return events
+
+            return availableEvents('Autobusy');
         }
         case '4' : {
-            const events = availableEvents('Promy i rejsy');
-            return events
+
+            return availableEvents('Promy i rejsy');
         }
         case '5' : {
-            const events = availableEvents('Kina');
-            return events
+
+            return availableEvents('Kina');
         }
         case '6' : {
-            const events = availableEvents('Teatry');
-            return events
+
+            return availableEvents('Teatry');
         }
         case '7' : {
-            const events = availableEvents('Koncerty');
-            return events
+
+            return availableEvents('Koncerty');
         }
         case '8' : {
-            const events = availableEvents('Festiwale');
-            return events
+
+            return availableEvents('Festiwale');
         }
         case '9' : {
-            const events = availableEvents('Wydarzenia sportowe');
-            return events
+
+            return availableEvents('Wydarzenia sportowe');
         }
         case '10' : {
-            const events = availableEvents('Muzea');
-            return events
+
+            return availableEvents('Muzea');
         }
         case '11' : {
-            const events = availableEvents('Zabytki');
-            return events
+
+            return availableEvents('Zabytki');
         }
         case '12' : {
-            const events = availableEvents('Parki rozrywki');
-            return events
+
+            return availableEvents('Parki rozrywki');
         }
         case '13' : {
-            const events = availableEvents('Atrakcje turystyczne');
-            return events
+            return availableEvents('Atrakcje turystyczne');
         }
         default : {
             throw new Error(`Proszę wybrać poprawny typ wydarzenia`)
         }
     }
 
+
 }
 
 export const createReservation = async function(user:User): Promise<Reservation> {
-    const filteredEvents = await filterEvents();
+    await filterEvents();
     const eventId = await ask(`Proszę podać id wybranego wydarzenia : `);
     const event = mockEvents.get(eventId.trim());
-    if(event !== undefined && filteredEvents.includes(event)){
+
+    if(event !== undefined){
         const spot = await reserveSpot(event);
         const newReservation: Reservation = {
             id: `${spot.id}-${user.name}`,
             event : event,
             price : spot.price,
             status : "pending",
-            spots : [spot],
+            spots : spot,
         }
         user.reservations.set(`${spot.id}-${user.name}`,newReservation);
         console.log(`Pomyślnie utworzono rezerwacje.\nAby uzyskać więcej informacji proszę wybrać opcję "Moje rezerwacje" w menu`);
@@ -200,21 +200,28 @@ export const deleteReservation = async function(user: User):Promise<void> {
     const choice = await ask(`Proszę podać id rezerwacji`);
     const deleted = user.reservations.get(choice);
     if (deleted !== undefined) {
-        user.reservations.delete(choice);
-        console.log(`Pomyslnie usunięto rezerwacje !`);
-
 
 
         const delEvt = deleted.event;
-        const delSpots = delEvt.spots;
-        const available = delEvt.spots.filter((s) => s.isAvailable)
-        delSpots.forEach((s) => {
-            s.isAvailable = true;
-            mockSpots.set(s.id,s);
-            available.push(s);
-        });
+        const spots = delEvt.spots;
+        const reservedSpot = deleted.spots;
+        reservedSpot.isAvailable = true;
 
-        mockEvents.set(delEvt.id,{...delEvt, spots: [...available]});
+        // const available = delEvt.spots.filter((s) => s.isAvailable)
+        //
+        // available.push(reservedSpot);
+        // delSpots.forEach(spot => {
+        //     spot.isAvailable = true;
+        // })
+        // delSpots.forEach((s) => {
+        //     s.isAvailable = true;
+        //     mockSpots.set(s.id,s);
+        //     available.unshift(s);
+        // });
+        console.log(delEvt);
+        mockEvents.set(delEvt.id,{...delEvt, spots: [...spots]});
+        user.reservations.delete(choice);
+        console.log(`Pomyslnie usunięto rezerwacje !`);
     }
     else throw new Error(`Nie posiadasz rezerwacji o podanym id`);
 }

@@ -36,6 +36,7 @@ async function main():Promise<void> {
                             console.log(`Pomyślnie zalogowano jako :`);
                             console.log(loggedUser);
                         }
+                        else throw new Error(`Logowanie nie działa, prawdopodobnie coś z map nie dizala`)
                         break;
                     case '2' :
                         const nameIn = await ask(`Podaj swoją nazwe (4-20 znaków bez znaków specjalnych) : `);
@@ -76,7 +77,7 @@ async function main():Promise<void> {
                             throw new Error(`Twoja data urodzenia musi być większa niż 2011-01-01`)
                         }
                         const newUser = {email: email, name: name, password: password, birthdate: birthDate, reservations: new Map<string,Reservation>()}
-                        Users.set(email, newUser);
+                        Users.set(name, newUser);
                         console.log(`Witamy ${name} !\nPomyślnie stworzono kąto !`);
                         loggedUser = newUser;
                         break;
