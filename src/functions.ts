@@ -169,9 +169,7 @@ export const reserveSpot = async function(event: Event):Promise<Spot> {
             reserved.isAvailable = false;
             console.log(`Twoje miejsce zostało pomyślnie zarezerwowane !\nInformacje o twoim miejscu :\n`);
             console.log(reserved);
-            const availableAfterReservation = available.filter((s) => s.isAvailable)
             mockSpots.set(choiceIn.trim(),reserved)
-            mockEvents.set(choiceIn.trim(),{...event, spots: [...availableAfterReservation , reserved]});
             return reserved;
         }
         else throw new Error(`Nie ma miejsca o podanym id lub miejsce zostało już zarezerwowane !`);
